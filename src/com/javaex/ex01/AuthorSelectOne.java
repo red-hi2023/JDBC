@@ -5,17 +5,12 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AuthorSelectOne {
 	// 필드 생성자 //메소드 gs
 	// 메소드 일반
 	public static void main(String[] args) {
 
-		List<AuthorVo> authorList = new ArrayList<AuthorVo>();
-		
-		
 		// 0. import java.sql.*;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -24,7 +19,7 @@ public class AuthorSelectOne {
 		try {
 			// 1. JDBC 드라이버 (Oracle) 로딩
 			Class.forName("oracle.jdbc.driver.OracleDriver");
-
+			
 			// 2. Connection 얻어오기
 			String url = "jdbc:oracle:thin:@localhost:1521:xe";
 			conn = DriverManager.getConnection(url, "webdb", "webdb");
@@ -40,7 +35,6 @@ public class AuthorSelectOne {
 			query += " from author ";
 			query += " where author_id = ? ";
 			//System.out.println(query);
-			
 			pstmt = conn.prepareStatement(query);
 			
 			//바인딩
@@ -50,21 +44,17 @@ public class AuthorSelectOne {
 			rs = pstmt.executeQuery();
 			
 			// 4.결과처리
-			while(rs.next()) {
-				int authorId = rs.getInt(1);
-				String authorName = rs.getString(2);
-				String authorDesc = rs.getString(3);
-				
-				AuthorVo authorVo = new AuthorVo();
-				authorVo.setAuthorId(authorId);
-				authorVo.setAuthorName(authorName);
-				authorVo.setAuthorDesc(authorDesc);
-				
-				authorList.add(authorVo);
-				
-			}
+			rs.next();
+			int authorId = rs.getInt(1);	
+			String authorName = rs.getString(2);
+			String authorDesc = rs.getString(3);
 			
-
+			AuthorVo authorVo = new AuthorVo(authorId, authorName, authorDesc);
+			
+			System.out.println(authorVo);
+			System.out.println(authorVo.getAuthorName());
+			
+			
 		} catch (ClassNotFoundException e) {
 			System.out.println("error: 드라이버 로딩 실패 - " + e);
 		} catch (SQLException e) {
@@ -88,13 +78,6 @@ public class AuthorSelectOne {
 
 		}
 
-		for(int i=0; i<authorList.size(); i++) {
-			System.out.println("id:" + authorList.get(i).getAuthorId()
-					         + " name:" + authorList.get(i).getAuthorName()
-							 + " desc:" + authorList.get(i).getAuthorDesc()	);
-		}
-		
-		
 	}
 
 }
